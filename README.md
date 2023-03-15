@@ -22,4 +22,4 @@ Python Code Snap -
 Output of the Execution - 
 ![image](https://user-images.githubusercontent.com/23654739/225251141-1080d0c7-562b-4fa5-9279-404b1dd37d3d.png)
 
-# Note - I have added python task file in the same repo, please run it seperately and don't include it in the 
+# Note - I have added python task file in the same repo, please run it seperately and don't include it in the Maven Project(Appium Mobile Framework)
