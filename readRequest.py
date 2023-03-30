@@ -6,31 +6,53 @@ params = {"drilldowns": "Nation", "measures": "Population"}
 response = requests.get(url, params=params).json()
 
 data = response["data"]
-source = response['source'][0]['annotations']['source_name']
+source_name = response['source'][0]['annotations']['source_name']
 
-print(source)
-start_year = (int)(data[-1]["Year"])
-end_year =(int)(data[0]["Year"]) 
-max_growth = 0
-min_growth = float("inf")
-max_growth_year = ""
-min_growth_year = ""
+populations_data = {}
 
-
+# Capture year on year growth of the population
 for row in data:
-    growth = row["Population"]
-    if growth > max_growth:
-        max_growth = growth
-        max_growth_year = row["Year"]
-    if growth < min_growth:
-        min_growth = growth
-        min_growth_year = row["Year"]
-
-years = end_year - start_year
+    year = row["Year"]
+    population = row["Population"]
+    populations_data[year] = population
+    
+start_year = list(populations_data.items())[0]
+last_year = list(populations_data.items())[len(populations_data)-1]
 
 
+## capture total number of years
+total_years = int(start_year[0])-int(last_year[0])
 
-peak_growth = round((max_growth - data[1]["Population"]) / data[0]["Population"] * 100, 2)
-lowest_growth = round((min_growth - data[1]["Population"]) / data[0]["Population"] * 100, 2)
+population_growth = []
+population_growth_dict = {}
 
-print(f"According to {source}, in {years} years from {start_year} to {end_year}, peak population growth was {peak_growth}% in {max_growth_year} and the lowest population increase was {lowest_growth}% in {min_growth_year}.")
+## capture the population growth 
+for i in range(len(populations_data)-1):
+    current_year = int(list(populations_data.keys())[i])
+    #print(current_year)
+    prev_year = int(list(populations_data.keys())[i + 1])
+    #print(prev_year)
+    growth = (populations_data[str(current_year)] - populations_data[str(prev_year)]) / populations_data[str(prev_year)] * 100
+    population_growth.append(growth)
+    population_growth_dict[current_year] = growth
+
+
+# capture max and min growth
+max_growth = round(max(population_growth_dict.values()),2)
+min_growth = round(min(population_growth_dict.values()),2)
+
+
+peak_population_year = ''
+lowest_population_year = ''
+
+# capture the peak population year and lowest population year
+for year,growth in population_growth_dict.items():
+    if growth == max_growth:
+        peak_population_year = year
+    elif growth == min_growth:
+        lowest_population_year = year
+
+print (peak_population_year)
+print(lowest_population_year)
+
+print(f'According to {source_name}, in {total_years} years from {start_year[0]} to {last_year[0]}, peak population growth was {max_growth}% in {peak_population_year} and the lowest population increase was {min_growth}% in {lowest_population_year}.')
